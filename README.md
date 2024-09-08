@@ -1,6 +1,7 @@
 # Countdown Timer
 This Django app allows users to register, log in, and create event timers that countdown
-to a specified completion time.
+to a specified completion time.\
+The app is live on [Render](https://countdown-timer-63os.onrender.com)
 
 ## Features
 
