@@ -27,7 +27,9 @@ SECRET_KEY = 'django-insecure-!n987zg9v7au+znjc_z+h6ite)keg78t(%_8327x1ib(mf@)85
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'countdown-timer-63os.onrender.com'
+]
 
 
 # Application definition
