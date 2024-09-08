@@ -4,7 +4,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Bootstrap demo</title>
+        <title>Countdown Timer</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
               rel="stylesheet"
               integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
@@ -17,7 +17,7 @@
         <section class="navbar--section fw-bold">
             <nav class="navbar navbar-expand-lg bg-body-tertiary">
                 <div class="container-fluid">
-                    <a class="navbar-brand" href="#">Event Timer</a>
+                    <a class="navbar-brand" href="#">Countdown Timer</a>
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                             data-bs-target="#navbarNavAltMarkup"
                             aria-controls="navbarNavAltMarkup" aria-expanded="false"
@@ -44,13 +44,34 @@
 
         <section class="custom--time">
             <div class="container">
-                <p class=" h3">Your Event Timers</p>
+                <p class=" h3">Your Timers</p>
                 <div class="row">
                     {% if editable %}
+                    <p class="h4 text-center">Add a Timer</p>
                     <form id="pomodoroForm" method="POST" action="{% url 'add_timer' %}">
                         {% csrf_token %}
                         <div class="h5 col-lg-12 mt-5 editable--form">
-                            {{form}}
+                            <!--{{form}}-->
+                            <div class="form-group lh-lg">
+                                <label for="title">Title:</label>
+                                <input type="text" id="title" name="title" class="form-control" required>
+                            </div>
+                            <div class="form-group lh-lg">
+                                <label for="hours">Hours:</label>
+                                <input type="number" id="hours" name="hours" class="form-control" value="0" required min="0">
+                            </div>
+                            <div class="form-group lh-lg">
+                                <label for="minutes">Minutes:</label>
+                                <input type="number" id="minutes" name="minutes" class="form-control" value="0" required min="0" max="59">
+                            </div>
+                            <div class="form-group lh-lg">
+                                <label for="seconds">Seconds:</label>
+                                <input type="number" id="seconds" name="seconds" class="form-control" value="0" required min="0" max="59">
+                            </div>
+                            <div class="form-group lh-lg">
+                                <label for="priority">Priority:</label>
+                                <input type="number" id="priority" name="priority" class="form-control" value="0" required min="0" max="10">
+                            </div>
                             <div class="editable--form--btn text-center">
                                 <button class=" btn btn-primary " type="submit">Save</button>
                             </div>
@@ -68,13 +89,13 @@
                     {% for timer in timers %}
                     <div class="container mt-5 p-5 bg-opacity-10 rounded ">
                         <div class="row text-center">
-                            <div class="col ">
+                            <div class="col" id="timer-title{{ timer.id }}">
                                 <p class="fw-bolder text-center fs-3">{{ timer.title }}</p>
                             </div>
                             <div class="col d-flex align-items-center justify-content-center timer">
-                                <span id="hours{{ timer.id }}">{{ timer.hours }}</span>:
-                                <span id="minutes{{ timer.id }}">{{ timer.minutes }}</span>:
-                                <span id="seconds{{ timer.id }}">{{ timer.seconds }}</span>
+                                <span id="hours{{ timer.id }}">{{ timer.hours|stringformat:"02d" }}</span>:
+                                <span id="minutes{{ timer.id }}">{{ timer.minutes|stringformat:"02d" }}</span>:
+                                <span id="seconds{{ timer.id }}">{{ timer.seconds|stringformat:"02d" }}</span>
 
                                 <button class="btn btn-primary m-2"
                                         id="startButton{{ timer.id }}"
@@ -86,6 +107,8 @@
                                         onclick="resetTimer('{{ timer.id }}')">Reset</button>
                                 <a class="btn btn-danger m-2"
                                    href="{% url 'delete_timer' timer.id %}">Delete</a>
+                                <span id="initialHours{{ timer.id }}"
+                                      style="display: none;">{{ timer.hours }}</span>
                                 <span id="initialMinutes{{ timer.id }}"
                                       style="display: none;">{{ timer.minutes }}</span>
                                 <span id="initialSeconds{{ timer.id }}"

@@ -66,6 +66,8 @@ def show_timers(request):
 @login_required
 def add_timer(request):
     editable = True
+    timers = Timer.objects.all()
+
     if request.method == "POST":
         editable = False
         form = TimerForm(request.POST)
@@ -76,12 +78,12 @@ def add_timer(request):
             return redirect("show_timers")
     else:
         form = TimerForm()
-        timers = Timer.objects.all()
-        return render(request, 'show_timers.html', {
-            'form': form,
-            "editable": editable,
-            'timers': timers
-        })
+
+    return render(request, 'show_timers.html', {
+        'form': form,
+        "editable": editable,
+        'timers': timers or None
+    })
 
 
 @login_required
@@ -91,4 +93,3 @@ def delete(request, id):
     print(f"Successfully Deleted {id}")
 
     return redirect("show_timers")
-

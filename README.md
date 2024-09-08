@@ -65,4 +65,4 @@ Usage
 - Dashboard
 
   - The dashboard displays a list of created timers for the logged-in user.
-  - Users can view, start, reset or delete their timers.
+  - Users can start, pause, reset or delete their timers.

@@ -8,15 +8,18 @@ function startTimer(timerId) {
         return;
     }
 
+    const initialHours = parseInt(document.getElementById(`initialHours${timerId}`).innerText) || 0;
     const initialMinutes = parseInt(document.getElementById(`initialMinutes${timerId}`).innerText) || 0;
     const initialSeconds = parseInt(document.getElementById(`initialSeconds${timerId}`).innerText) || 0;
 
     const totalSeconds = initialMinutes * 60 + initialSeconds;
 
     const timer = {
-        timer: setInterval(() => updateITimer(timerId), 1000),
+        id: timerId,
+        title: document.getElementById(`timer-title${timerId}`).textContent.trim(),
+        timer: setInterval(() => updateTimer(timerId), 1000),
         isTimerRunning: true,
-        hours: 0,
+        hours: initialHours,
         minutes: initialMinutes,
         seconds: initialSeconds,
         totalSeconds: totalSeconds,
@@ -28,7 +31,7 @@ function startTimer(timerId) {
     timers[timerId] = timer;
 
     setProgressBarDuration(timerId, totalSeconds);
-    updateITimerDisplay(timerId);
+    updateTimerDisplay(timerId);
 
     timer.startButton.classList.add("disabled");
 }
@@ -38,7 +41,7 @@ function setProgressBarDuration(timerId, duration) {
     progressBar.style.setProperty('--duration', duration + 's');
 }
 
-function updateITimer(timerId) {
+function updateTimer(timerId) {
     let timer = timers[timerId];
 
     // Check if the timer is running
@@ -55,14 +58,14 @@ function updateITimer(timerId) {
 
                 if (timer.hours < 0) {
                     clearInterval(timer.timer);
-                    timerComplete(timerId);
+                    handleTimerComplete(timer);
                     timer.isTimerRunning = false;
                     return;
                 }
             }
         }
 
-        updateITimerDisplay(timerId);
+        updateTimerDisplay(timerId);
         updateProgressBar(timerId);
     }
 }
@@ -100,7 +103,7 @@ function resumeTimer(timerId) {
     const timer = timers[timerId];
 
     if (!timer.isTimerRunning) {
-        timer.timer = setInterval(() => updateITimer(timerId), 1000);
+        timer.timer = setInterval(() => updateTimer(timerId), 1000);
         timer.isTimerRunning = true;
 
         timer.startButton.textContent = "Start"
@@ -124,16 +127,16 @@ function resetTimer(timerId) {
     timer.startButton.textContent = "Start";
     timer.startButton.classList.remove('disabled');
     timer.pauseButton.classList.remove('disabled');
-    updateITimerDisplay(timerId);
+    updateTimerDisplay(timerId);
     resetProgressBar(timer);
 }
 
-function timerComplete(timerId) {
-    audio.play();
-    resetTimer(timerId);
+function handleTimerComplete(timer) {
+    audio.play(); // Doesn't work because of permissions
+    resetTimer(timer.id);
 }
 
-function updateITimerDisplay(timerId) {
+function updateTimerDisplay(timerId) {
     let timer = timers[timerId];
     const formattedHours = padTime(timer.hours);
     const formattedMinutes = padTime(timer.minutes);
