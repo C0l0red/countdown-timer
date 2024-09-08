@@ -45,7 +45,6 @@
         <section class="custom--time">
             <div class="container">
                 <p class=" h3">Your Event Timers</p>
-                {% if user.is_authenticated%}
                 <div class="row">
                     {% if editable %}
                     <form id="pomodoroForm" method="POST" action="{% url 'add_timer' %}">
@@ -61,7 +60,7 @@
 
                     {% if timers is None %}
                     <div class="h5 col-lg-12 mt-5 text-center">
-                        <p class="h4 text-center">No timer is set</p>
+                        <p class="h4 text-center">No timers added yet</p>
                     </div>
 
                     {% else %}
@@ -70,8 +69,7 @@
                     <div class="container mt-5 p-5 bg-opacity-10 rounded ">
                         <div class="row text-center">
                             <div class="col ">
-                                <p class="fw-bolder text-center fs-3">Category : {{ timer.category }}</p>
-                                <p class="fw-bolder text-center">Title : {{ timer.title }}</p>
+                                <p class="fw-bolder text-center fs-3">{{ timer.title }}</p>
                             </div>
                             <div class="col d-flex align-items-center justify-content-center timer">
                                 <span id="hours{{ timer.id }}">{{ timer.hours }}</span>:
@@ -87,7 +85,7 @@
                                 <button class="btn btn-primary m-2"
                                         onclick="resetTimer('{{ timer.id }}')">Reset</button>
                                 <a class="btn btn-danger m-2"
-                                   href="/delete/{{ timer.id }}">Delete</a>
+                                   href="{% url 'delete_timer' timer.id %}">Delete</a>
                                 <span id="initialMinutes{{ timer.id }}"
                                       style="display: none;">{{ timer.minutes }}</span>
                                 <span id="initialSeconds{{ timer.id }}"
@@ -106,16 +104,6 @@
                     {% endif %}
                     {% endif %}
                 </div>
-                {% else %}
-                <div class="row">
-
-                    <div class="col-lg-12 p-5 mt-5 text-center">
-
-                        <p class="h3">Please <a href="{% url 'login' %}"
-                                                class="btn btn-primary">Login</a> to see your timers</p>
-                    </div>
-                </div>
-                {% endif %}
             </div>
         </section>
 

@@ -1,4 +1,5 @@
 from django.contrib import messages, auth
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
@@ -50,24 +51,19 @@ def logout(request):
     return redirect('show_timers')
 
 
+@login_required
 def show_timers(request):
-    timers = Timer.objects.filter(user=request.user).order_by('priority')
     form = TimerForm()
-
-    if len(timers) == 0:
-        return render(request, 'show_timers.html', {
-            'form': form,
-            'editable': False,
-            'timers': None,
-        })
+    timers = Timer.objects.filter(user=request.user).order_by('priority')
 
     return render(request, 'show_timers.html', {
         'form': form,
         'editable': False,
-        'timers': timers,
+        'timers': timers or None,
     })
 
 
+@login_required
 def add_timer(request):
     editable = True
     if request.method == "POST":
@@ -86,3 +82,13 @@ def add_timer(request):
             "editable": editable,
             'timers': timers
         })
+
+
+@login_required
+def delete(request, id):
+    timer = Timer.objects.get(id=id, user=request.user)
+    timer.delete()
+    print(f"Successfully Deleted {id}")
+
+    return redirect("show_timers")
+

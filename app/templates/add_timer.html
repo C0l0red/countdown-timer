@@ -1,9 +1,0 @@
-<form id="pomodoroForm" method="POST" action="{% url 'add_timer' user.id %}">
-    {% csrf_token %}
-    <div class="h5 col-lg-12 mt-5 editable--form">
-        {{form}}
-        <div class="editable--form--btn text-center">
-            <button class=" btn btn-primary " type="submit">Save</button>
-        </div>
-    </div>
-</form>
