@@ -2,10 +2,10 @@ from django import forms
 from .models import Timer
 
 
-class PomodoroForm(forms.ModelForm):
+class TimerForm(forms.ModelForm):
     class Meta:
         model = Timer
-        fields = ['title','hours','minutes','seconds','category','priority']
+        fields = ['title', 'hours', 'minutes', 'seconds', 'category', 'priority']
         widgets = {
             'title': forms.TextInput(attrs={'required': 'required'}),
             'hours': forms.NumberInput(attrs={'required': 'required'}),

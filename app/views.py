@@ -1,45 +1,41 @@
 from django.contrib import messages, auth
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 
 from app.models import Timer
-from .forms import PomodoroForm
+from .forms import TimerForm
 
 
 def login(request):
     if request.method == "POST":
-        email = request.POST['email']
-        password = request.POST['password']
-        if User.objects.filter(username=email).exists():
-            user = auth.authenticate(username=email, password=password)
-            print(user)
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+
+            user = auth.authenticate(username=username, password=password)
             if user is not None:
                 auth.login(request, user)
                 return redirect('show_timers')
-            else:
-                messages.error(request, 'Invalid credentials')
-                return redirect("login")
         else:
-            messages.info(request, "Invalid email or password")
-            return redirect('login')
+            print(form.errors)
+
     else:
-        return render(request, 'login.html')
+        form = AuthenticationForm()
+
+    return render(request, 'login.html', {'form': form})
 
 
 def signup(request):
     if request.method == 'POST':
-        name = request.POST['username']
-        email = request.POST['email']
+        username = request.POST['username']
         password = request.POST['password']
-        if User.objects.filter(first_name=name).exists():
+        if User.objects.filter(username=username).exists():
             messages.info(request, "Username already taken")
             return redirect('signup')
-        elif User.objects.filter(username=email).exists():
-            messages.info(request, "Email already taken")
-            return redirect('signup')
         else:
-            user = User.objects.create_user(first_name=name,
-                                            username=email,
+            user = User.objects.create_user(username=username,
                                             password=password)
             print(user)
             print("User registered Successfully")
@@ -55,8 +51,8 @@ def logout(request):
 
 
 def show_timers(request):
-    timers = Timer.objects.all().order_by('priority')
-    form = PomodoroForm()
+    timers = Timer.objects.filter(user=request.user).order_by('priority')
+    form = TimerForm()
 
     if len(timers) == 0:
         return render(request, 'show_timers.html', {
@@ -72,22 +68,21 @@ def show_timers(request):
     })
 
 
-def add(request, id: int):
+def add_timer(request):
     editable = True
     if request.method == "POST":
         editable = False
-        form = PomodoroForm(request.POST)
+        form = TimerForm(request.POST)
         if form.is_valid():
             form_instance = form.save(commit=False)
-            form_instance.uuid = id
+            form_instance.user = request.user
             form_instance.save()
             return redirect("show_timers")
     else:
-        form = PomodoroForm()
+        form = TimerForm()
         timers = Timer.objects.all()
         return render(request, 'show_timers.html', {
             'form': form,
             "editable": editable,
             'timers': timers
         })
-
