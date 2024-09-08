@@ -79,11 +79,13 @@
                                 <span id="seconds{{ timer.id }}">{{ timer.seconds }}</span>
 
                                 <button class="btn btn-primary m-2"
-                                        onclick="startITimer('{{ timer.id }}')">Start</button>
+                                        id="startButton{{ timer.id }}"
+                                        onclick="startTimer('{{ timer.id }}')">Start</button>
                                 <button class="btn btn-primary m-2"
+                                        id="pauseButton{{ timer.id }}"
                                         onclick="pauseITimer('{{ timer.id }}')">Pause</button>
                                 <button class="btn btn-primary m-2"
-                                        onclick="resetITimer('{{ timer.id }}')">Reset</button>
+                                        onclick="resetTimer('{{ timer.id }}')">Reset</button>
                                 <a class="btn btn-danger m-2"
                                    href="/delete/{{ timer.id }}">Delete</a>
                                 <span id="initialMinutes{{ timer.id }}"

@@ -1,97 +1,36 @@
-// Main event timer
-let mainTimer;
-let mainSeconds = 0;
-let mainMinutes = 25;
-let mainHours = 0;
-let mainIsTimerRunning = false;
-
+const timers = {};
 const audio = new Audio('static/media/alarm.mp3');
 
-function startMainTimer() {
-    if (!mainIsTimerRunning) {
-        mainTimer = setInterval(updateMainTimer, 1000);
-        mainIsTimerRunning = true;
-    }
-}
-
-function updateMainTimer() {
-    mainSeconds--;
-
-    if (mainSeconds < 0) {
-        mainSeconds = 59;
-
-        mainMinutes--;
-
-        if (mainMinutes < 0) {
-            mainMinutes = 59;
-
-            mainHours--;
-
-            if (mainHours < 0) {
-                clearInterval(mainTimer);
-                timerComplete();
-                return;
-            }
-        }
+function startTimer(timerId) {
+    const existingTimer = timers[timerId];
+    if (existingTimer) {
+        resumeTimer(timerId)
+        return;
     }
 
-    updateMainTimerDisplay();
-}
-
-function updateMainTimerDisplay() {
-    const formattedMainHours = padTime(mainHours);
-    const formattedMainMinutes = padTime(mainMinutes);
-    const formattedMainSeconds = padTime(mainSeconds);
-
-    document.getElementById('hours').innerText = formattedMainHours;
-    document.getElementById('minutes').innerText = formattedMainMinutes;
-    document.getElementById('seconds').innerText = formattedMainSeconds;
-}
-
-function timerComplete() {
-    audio.play();
-}
-
-function pauseTimer() {
-    clearInterval(mainTimer);
-    mainIsTimerRunning = false;
-}
-
-function resetTimer() {
-    clearInterval(mainTimer);
-    mainIsTimerRunning = false;
-    mainSeconds = 0;
-    mainHours = 0;
-    mainMinutes = 25;
-    updateMainTimerDisplay();
-}
-
-function padTime(time) {
-    return (time < 10) ? `0${time}` : time;
-}
-
-
-// For individual timer
-const timers = {};
-
-function startITimer(timerId) {
     const initialMinutes = parseInt(document.getElementById(`initialMinutes${timerId}`).innerText) || 0;
     const initialSeconds = parseInt(document.getElementById(`initialSeconds${timerId}`).innerText) || 0;
 
     const totalSeconds = initialMinutes * 60 + initialSeconds;
 
-    timers[timerId] = {
+    const timer = {
         timer: setInterval(() => updateITimer(timerId), 1000),
         isTimerRunning: true,
         hours: 0,
         minutes: initialMinutes,
         seconds: initialSeconds,
         totalSeconds: totalSeconds,
-        progressBar: document.getElementById(`progressBar${timerId}`)
+        progressBar: document.getElementById(`progressBar${timerId}`),
+        startButton: document.getElementById(`startButton${timerId}`),
+        pauseButton: document.getElementById(`pauseButton${timerId}`),
     };
+
+    timers[timerId] = timer;
 
     setProgressBarDuration(timerId, totalSeconds);
     updateITimerDisplay(timerId);
+
+    timer.startButton.classList.add("disabled");
 }
 
 function setProgressBarDuration(timerId, duration) {
@@ -140,6 +79,10 @@ function updateProgressBar(timerId) {
     }
 }
 
+function resetProgressBar(timer) {
+    timer.progressBar.style.width = '0%';
+}
+
 
 function pauseITimer(timerId) {
     const timer = timers[timerId];
@@ -147,19 +90,27 @@ function pauseITimer(timerId) {
     if (timer.isTimerRunning) {
         clearInterval(timer.timer);
         timer.isTimerRunning = false;
+        timer.startButton.textContent = "Resume";
+        timer.startButton.classList.remove("disabled");
+        timer.pauseButton.classList.add("disabled");
     }
 }
 
-function resumeITimer(timerId) {
+function resumeTimer(timerId) {
     const timer = timers[timerId];
 
     if (!timer.isTimerRunning) {
         timer.timer = setInterval(() => updateITimer(timerId), 1000);
         timer.isTimerRunning = true;
+
+        timer.startButton.textContent = "Start"
+        timer.startButton.classList.add("disabled");
+
+        timer.pauseButton.classList.remove("disabled");
     }
 }
 
-function resetITimer(timerId) {
+function resetTimer(timerId) {
     const timerIdInput = document.querySelector(`input.timerId[value='${timerId}']`);
     const initialMinutes = parseInt(document.getElementById(`initialMinutes${timerId}`).innerText) || 0;
     const initialSeconds = parseInt(document.getElementById(`initialSeconds${timerId}`).innerText) || 0;
@@ -170,13 +121,16 @@ function resetITimer(timerId) {
     timer.seconds = initialSeconds;
     timer.hours = 0;
     timer.minutes = initialMinutes;
+    timer.startButton.textContent = "Start";
+    timer.startButton.classList.remove('disabled');
+    timer.pauseButton.classList.remove('disabled');
     updateITimerDisplay(timerId);
+    resetProgressBar(timer);
 }
 
 function timerComplete(timerId) {
-    const audio1 = new Audio('static/media/alarm.mp3');
-    console.log("Played...")
-    audio1.play();
+    audio.play();
+    resetTimer(timerId);
 }
 
 function updateITimerDisplay(timerId) {
@@ -188,4 +142,8 @@ function updateITimerDisplay(timerId) {
     document.getElementById(`hours${timerId}`).innerText = formattedHours;
     document.getElementById(`minutes${timerId}`).innerText = formattedMinutes;
     document.getElementById(`seconds${timerId}`).innerText = formattedSeconds;
+}
+
+function padTime(time) {
+    return (time < 10) ? `0${time}` : time;
 }
