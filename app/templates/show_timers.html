@@ -47,36 +47,48 @@
                 <p class=" h3">Your Timers</p>
                 <div class="row">
                     {% if editable %}
-                    <p class="h4 text-center">Add a Timer</p>
-                    <form id="pomodoroForm" method="POST" action="{% url 'add_timer' %}">
-                        {% csrf_token %}
-                        <div class="h5 col-lg-12 mt-5 editable--form">
-                            <!--{{form}}-->
-                            <div class="form-group lh-lg">
-                                <label for="title">Title:</label>
-                                <input type="text" id="title" name="title" class="form-control" required>
+                    <div class="container mt-5">
+                        <p class="h4 text-center">Add a Timer</p>
+                        <form id="pomodoroForm" method="POST" action="{% url 'add_timer' %}">
+                            {% csrf_token %}
+                            <div class="row">
+                                <!-- Title -->
+                                <div class="form-group lh-lg col-12 col-md-12">
+                                    <label for="title">Title:</label>
+                                    <input type="text" id="title" name="title" class="form-control" required>
+                                </div>
+
+                                <!-- Hours -->
+                                <div class="form-group lh-lg col-12 col-md-6">
+                                    <label for="hours">Hours:</label>
+                                    <input type="number" id="hours" name="hours" class="form-control" value="0" required min="0">
+                                </div>
+
+                                <!-- Minutes -->
+                                <div class="form-group lh-lg col-12 col-md-6">
+                                    <label for="minutes">Minutes:</label>
+                                    <input type="number" id="minutes" name="minutes" class="form-control" value="0" required min="0" max="59">
+                                </div>
+
+                                <!-- Seconds -->
+                                <div class="form-group lh-lg col-12 col-md-6">
+                                    <label for="seconds">Seconds:</label>
+                                    <input type="number" id="seconds" name="seconds" class="form-control" value="0" required min="0" max="59">
+                                </div>
+
+                                <!-- Priority -->
+                                <div class="form-group lh-lg col-12 col-md-6">
+                                    <label for="priority">Priority:</label>
+                                    <input type="number" id="priority" name="priority" class="form-control" value="0" required min="0" max="10">
+                                </div>
+
+                                <!-- Submit Button -->
+                                <div class="editable--form--btn text-center col-12 mt-6">
+                                    <button class="btn btn-primary" type="submit">Save</button>
+                                </div>
                             </div>
-                            <div class="form-group lh-lg">
-                                <label for="hours">Hours:</label>
-                                <input type="number" id="hours" name="hours" class="form-control" value="0" required min="0">
-                            </div>
-                            <div class="form-group lh-lg">
-                                <label for="minutes">Minutes:</label>
-                                <input type="number" id="minutes" name="minutes" class="form-control" value="0" required min="0" max="59">
-                            </div>
-                            <div class="form-group lh-lg">
-                                <label for="seconds">Seconds:</label>
-                                <input type="number" id="seconds" name="seconds" class="form-control" value="0" required min="0" max="59">
-                            </div>
-                            <div class="form-group lh-lg">
-                                <label for="priority">Priority:</label>
-                                <input type="number" id="priority" name="priority" class="form-control" value="0" required min="0" max="10">
-                            </div>
-                            <div class="editable--form--btn text-center">
-                                <button class=" btn btn-primary " type="submit">Save</button>
-                            </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                     {% else %}
 
                     {% if timers is None %}
@@ -87,39 +99,44 @@
                     {% else %}
 
                     {% for timer in timers %}
-                    <div class="container mt-5 p-5 bg-opacity-10 rounded ">
+                    <div class="container mt-5 p-5 bg-opacity-10 rounded">
                         <div class="row text-center">
-                            <div class="col" id="timer-title{{ timer.id }}">
+                            <!-- Timer Title -->
+                            <div class="col-12 col-md-4 mb-3" id="timer-title{{ timer.id }}">
                                 <p class="fw-bolder text-center fs-3">{{ timer.title }}</p>
                             </div>
-                            <div class="col d-flex align-items-center justify-content-center timer">
-                                <span id="hours{{ timer.id }}">{{ timer.hours|stringformat:"02d" }}</span>:
-                                <span id="minutes{{ timer.id }}">{{ timer.minutes|stringformat:"02d" }}</span>:
-                                <span id="seconds{{ timer.id }}">{{ timer.seconds|stringformat:"02d" }}</span>
 
-                                <button class="btn btn-primary m-2"
-                                        id="startButton{{ timer.id }}"
-                                        onclick="startTimer('{{ timer.id }}')">Start</button>
-                                <button class="btn btn-primary m-2"
-                                        id="pauseButton{{ timer.id }}"
-                                        onclick="pauseITimer('{{ timer.id }}')">Pause</button>
-                                <button class="btn btn-primary m-2"
-                                        onclick="resetTimer('{{ timer.id }}')">Reset</button>
-                                <a class="btn btn-danger m-2"
-                                   href="{% url 'delete_timer' timer.id %}">Delete</a>
-                                <span id="initialHours{{ timer.id }}"
-                                      style="display: none;">{{ timer.hours }}</span>
-                                <span id="initialMinutes{{ timer.id }}"
-                                      style="display: none;">{{ timer.minutes }}</span>
-                                <span id="initialSeconds{{ timer.id }}"
-                                      style="display: none;">{{ timer.seconds }}</span>
+                            <!-- Timer Countdown and Buttons -->
+                            <div class="col-12 col-md-8 d-flex align-items-center justify-content-center timer flex-wrap">
+                                <!-- Timer Display -->
+                                <span id="hours{{ timer.id }}" class="fs-4">{{ timer.hours|stringformat:"02d" }}</span>:
+                                <span id="minutes{{ timer.id }}" class="fs-4">{{ timer.minutes|stringformat:"02d" }}</span>:
+                                <span id="seconds{{ timer.id }}" class="fs-4">{{ timer.seconds|stringformat:"02d" }}</span>
 
-                                <!-- Add an additional hidden input field to store the timer ID -->
+                                <!-- Buttons -->
+                                <div class="d-flex justify-content-center mt-2 mt-md-0">
+                                    <button class="btn btn-primary mx-2"
+                                            id="startButton{{ timer.id }}"
+                                            onclick="startTimer('{{ timer.id }}')">Start</button>
+                                    <button class="btn btn-primary mx-2"
+                                            id="pauseButton{{ timer.id }}"
+                                            onclick="pauseITimer('{{ timer.id }}')">Pause</button>
+                                    <button class="btn btn-primary mx-2"
+                                            onclick="resetTimer('{{ timer.id }}')">Reset</button>
+                                    <a class="btn btn-danger mx-2"
+                                       href="{% url 'delete_timer' timer.id %}">Delete</a>
+                                </div>
+
+                                <!-- Hidden Fields -->
+                                <span id="initialHours{{ timer.id }}" style="display: none;">{{ timer.hours }}</span>
+                                <span id="initialMinutes{{ timer.id }}" style="display: none;">{{ timer.minutes }}</span>
+                                <span id="initialSeconds{{ timer.id }}" style="display: none;">{{ timer.seconds }}</span>
                                 <input type="hidden" class="timerId" value="{{ timer.id }}">
                             </div>
                         </div>
 
-                        <div class="round-time-bar" data-style="smooth" style="--duration: 150;">
+                        <!-- Progress Bar -->
+                        <div class="round-time-bar mt-3" data-style="smooth" style="--duration: 150;">
                             <div id="progressBar{{ timer.id }}"></div>
                         </div>
                     </div>
